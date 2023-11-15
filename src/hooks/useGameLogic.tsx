@@ -21,6 +21,23 @@ export default function useGameLogic() {
   });
   const { refetch, isLoading, isError } = useRandomWord();
 
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [word]);
+
+  useEffect(() => {
+    resetGame();
+  }, []);
+
+  useEffect(() => {
+    if (stageToDeath == 6) {
+      gameLost();
+    }
+  }, [stageToDeath]);
+
   async function resetGame() {
     const res = await refetch();
 
@@ -39,25 +56,19 @@ export default function useGameLogic() {
         return s;
       });
     } else {
+      if (!selected.incorrect.hasOwnProperty(e.key)) {
+        setStageToDeath((s) => (s += 1));
+      }
       setSelected((s) => {
         s.incorrect[e.key] = true;
         return s;
       });
     }
 
-    console.log(selected);
+    if (Object.values(selected.correct).every((item) => item)) {
+      gameWon();
+    }
   }
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [word]);
-
-  useEffect(() => {
-    resetGame();
-  }, []);
 
   function gameLost() {
     setStageToDeath((s) => (s += 1));
@@ -69,18 +80,16 @@ export default function useGameLogic() {
     }, 500);
   }
 
-  function increaseStageToDeath() {
-    if (stageToDeath < 5) {
-      setStageToDeath((s) => (s += 1));
-    } else {
-      gameLost();
-    }
+  function gameWon() {
+    setGameStatus("halt");
+    alert("You Win! Nice Job :)");
+
+    resetGame();
   }
 
   return {
     word,
     stageToDeath,
-    increaseStageToDeath,
     isLoading,
     isError,
     resetGame,

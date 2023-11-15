@@ -48,10 +48,6 @@ function Game() {
     <>
       <Person stage={stageToDeath} />
       <Letters word={word} />
-
-      <button disabled={gameStatus == "halt"} onClick={increaseStageToDeath}>
-        kill the person
-      </button>
     </>
   );
 }
