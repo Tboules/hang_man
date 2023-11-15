@@ -18,7 +18,7 @@ function App() {
 export default App;
 
 function Game() {
-  const { increaseStageToDeath, stageToDeath, isLoading, isError } =
+  const { increaseStageToDeath, stageToDeath, isLoading, isError, gameStatus } =
     useGameLogic();
 
   if (isLoading) {
@@ -40,7 +40,10 @@ function Game() {
   return (
     <>
       <Person stage={stageToDeath} />
-      <button onClick={increaseStageToDeath}> kill the person </button>
+      <button disabled={gameStatus == "lost"} onClick={increaseStageToDeath}>
+        {" "}
+        kill the person{" "}
+      </button>
     </>
   );
 }
