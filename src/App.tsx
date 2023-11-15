@@ -1,4 +1,5 @@
 import Layout from "./components/Layout";
+import Letters from "./components/Letters";
 import Person from "./components/Person";
 import useGameLogic from "./hooks/useGameLogic";
 import { QueryClientProvider, QueryClient } from "react-query";
@@ -18,8 +19,14 @@ function App() {
 export default App;
 
 function Game() {
-  const { increaseStageToDeath, stageToDeath, isLoading, isError, gameStatus } =
-    useGameLogic();
+  const {
+    increaseStageToDeath,
+    stageToDeath,
+    isLoading,
+    isError,
+    gameStatus,
+    word,
+  } = useGameLogic();
 
   if (isLoading) {
     return (
@@ -40,9 +47,10 @@ function Game() {
   return (
     <>
       <Person stage={stageToDeath} />
-      <button disabled={gameStatus == "lost"} onClick={increaseStageToDeath}>
-        {" "}
-        kill the person{" "}
+      <Letters word={word} />
+
+      <button disabled={gameStatus == "halt"} onClick={increaseStageToDeath}>
+        kill the person
       </button>
     </>
   );

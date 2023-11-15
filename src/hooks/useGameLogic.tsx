@@ -1,12 +1,24 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
-type IGameStatus = "playing" | "lost";
+type IGameStatus = "playing" | "halt";
+type ISelectedHashMap = {
+  correct: {
+    [key: string]: boolean;
+  };
+  incorrect: {
+    [key: string]: boolean;
+  };
+};
 
 export default function useGameLogic() {
   const [gameStatus, setGameStatus] = useState<IGameStatus>("playing");
   const [stageToDeath, setStageToDeath] = useState<number>(0);
   const [word, setWord] = useState<string>("");
+  const [selected, setSelected] = useState<ISelectedHashMap>({
+    correct: {},
+    incorrect: {},
+  });
   const { refetch, isLoading, isError } = useRandomWord();
 
   async function resetGame() {
@@ -14,9 +26,34 @@ export default function useGameLogic() {
 
     if (res.data) {
       setWord(res.data[0]);
+      setSelected(initSelectObject(res.data[0]));
     }
     setGameStatus("playing");
   }
+
+  function handleKeyDown(e: KeyboardEvent) {
+    if (e.key in selected.correct) {
+      console.log(e.key, "letter found");
+      setSelected((s) => {
+        s.correct[e.key] = true;
+        return s;
+      });
+    } else {
+      setSelected((s) => {
+        s.incorrect[e.key] = true;
+        return s;
+      });
+    }
+
+    console.log(selected);
+  }
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [word]);
 
   useEffect(() => {
     resetGame();
@@ -24,7 +61,7 @@ export default function useGameLogic() {
 
   function gameLost() {
     setStageToDeath((s) => (s += 1));
-    setGameStatus("lost");
+    setGameStatus("halt");
     setTimeout(() => {
       alert("You Lose");
       setStageToDeath(0);
@@ -48,6 +85,7 @@ export default function useGameLogic() {
     isError,
     resetGame,
     gameStatus,
+    selected,
   };
 }
 
@@ -64,7 +102,7 @@ async function getRandomWord(): Promise<string[]> {
   const length = Math.ceil(Math.random() * 6 + 3);
 
   const response = await fetch(
-    `https://random-word-api.vercel.app/api?words=1&length=${length}`
+    `https://random-word-api.vercel.app/api?words=1&length=${length}`,
   );
 
   if (!response.ok) {
@@ -72,4 +110,17 @@ async function getRandomWord(): Promise<string[]> {
   }
 
   return response.json();
+}
+
+function initSelectObject(word: string): ISelectedHashMap {
+  const map: ISelectedHashMap = {
+    correct: {},
+    incorrect: {},
+  };
+
+  for (let i = 0; i < word.length; i++) {
+    map.correct[word[i]] = false;
+  }
+
+  return map;
 }
