@@ -1,15 +1,46 @@
 import Layout from "./components/Layout";
 import Person from "./components/Person";
 import useGameLogic from "./hooks/useGameLogic";
+import { QueryClientProvider, QueryClient } from "react-query";
+
+const qc = new QueryClient();
 
 function App() {
-  const { increaseStageToDeath, stageToDeath } = useGameLogic();
   return (
-    <Layout>
-      <Person stage={stageToDeath} />
-      <button onClick={increaseStageToDeath}> kill the person </button>
-    </Layout>
+    <QueryClientProvider client={qc}>
+      <Layout>
+        <Game />
+      </Layout>
+    </QueryClientProvider>
   );
 }
 
 export default App;
+
+function Game() {
+  const { increaseStageToDeath, stageToDeath, isLoading, isError } =
+    useGameLogic();
+
+  if (isLoading) {
+    return (
+      <>
+        <h1>Loading...</h1>
+      </>
+    );
+  }
+
+  if (isError) {
+    return (
+      <>
+        <h1>Error...</h1>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Person stage={stageToDeath} />
+      <button onClick={increaseStageToDeath}> kill the person </button>
+    </>
+  );
+}
