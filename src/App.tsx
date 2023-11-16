@@ -26,6 +26,7 @@ function Game() {
     isError,
     gameStatus,
     word,
+    selected,
   } = useGameLogic();
 
   if (isLoading) {
@@ -47,7 +48,7 @@ function Game() {
   return (
     <>
       <Person stage={stageToDeath} />
-      <Letters word={word} />
+      <Letters selected={selected} word={word} />
     </>
   );
 }

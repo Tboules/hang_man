@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
 type IGameStatus = "playing" | "halt";
-type ISelectedHashMap = {
+export type ISelectedHashMap = {
   correct: {
     [key: string]: boolean;
   };
@@ -12,7 +12,7 @@ type ISelectedHashMap = {
 };
 
 export default function useGameLogic() {
-  const [gameStatus, setGameStatus] = useState<IGameStatus>("playing");
+  const [gameStatus, setGameStatus] = useState<IGameStatus>("halt");
   const [stageToDeath, setStageToDeath] = useState<number>(0);
   const [word, setWord] = useState<string>("");
   const [selected, setSelected] = useState<ISelectedHashMap>({
@@ -38,6 +38,15 @@ export default function useGameLogic() {
     }
   }, [stageToDeath]);
 
+  useEffect(() => {
+    if (
+      Object.values(selected.correct).every((item) => item) &&
+      gameStatus == "playing"
+    ) {
+      gameWon();
+    }
+  }, [selected]);
+
   async function resetGame() {
     const res = await refetch();
 
@@ -49,11 +58,14 @@ export default function useGameLogic() {
   }
 
   function handleKeyDown(e: KeyboardEvent) {
+    if (gameStatus == "halt") return;
+
     if (e.key in selected.correct) {
-      console.log(e.key, "letter found");
       setSelected((s) => {
         s.correct[e.key] = true;
-        return s;
+        return {
+          ...s,
+        };
       });
     } else {
       if (!selected.incorrect.hasOwnProperty(e.key)) {
@@ -61,12 +73,10 @@ export default function useGameLogic() {
       }
       setSelected((s) => {
         s.incorrect[e.key] = true;
-        return s;
+        return {
+          ...s,
+        };
       });
-    }
-
-    if (Object.values(selected.correct).every((item) => item)) {
-      gameWon();
     }
   }
 
@@ -82,9 +92,11 @@ export default function useGameLogic() {
 
   function gameWon() {
     setGameStatus("halt");
-    alert("You Win! Nice Job :)");
 
-    resetGame();
+    setTimeout(() => {
+      alert("You Win! Nice Job :)");
+      resetGame();
+    }, 500);
   }
 
   return {
