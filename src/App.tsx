@@ -1,3 +1,4 @@
+import IncorrectSelectionDisplay from "./components/IncorrectSelectionDisplay";
 import Layout from "./components/Layout";
 import Letters from "./components/Letters";
 import Person from "./components/Person";
@@ -49,6 +50,7 @@ function Game() {
     <>
       <Person stage={stageToDeath} />
       <Letters selected={selected} word={word} />
+      <IncorrectSelectionDisplay selected={selected.incorrect} />
     </>
   );
 }
