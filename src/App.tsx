@@ -20,15 +20,7 @@ function App() {
 export default App;
 
 function Game() {
-  const {
-    increaseStageToDeath,
-    stageToDeath,
-    isLoading,
-    isError,
-    gameStatus,
-    word,
-    selected,
-  } = useGameLogic();
+  const { stageToDeath, isLoading, isError, word, selected } = useGameLogic();
 
   if (isLoading) {
     return (
@@ -48,9 +40,10 @@ function Game() {
 
   return (
     <>
+      <h1 className="text-xl font-bold">Hang Man :)</h1>
       <Person stage={stageToDeath} />
       <Letters selected={selected} word={word} />
-      <IncorrectSelectionDisplay selected={selected.incorrect} />
+      <IncorrectSelectionDisplay incorrect={selected.incorrect} />
     </>
   );
 }
