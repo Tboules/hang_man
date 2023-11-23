@@ -88,8 +88,6 @@ export default function useGameLogic() {
       alert(`You lose: the word was ${word}`);
       resetGame();
     }, 500);
-
-    const hello = "Marianne how are you";
   }
 
   function gameWon() {
