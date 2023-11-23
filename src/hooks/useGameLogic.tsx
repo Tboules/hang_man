@@ -54,6 +54,7 @@ export default function useGameLogic() {
       setWord(res.data[0]);
       setSelected(initSelectObject(res.data[0]));
     }
+    setStageToDeath(0);
     setGameStatus("playing");
   }
 
@@ -85,9 +86,10 @@ export default function useGameLogic() {
     setGameStatus("halt");
     setTimeout(() => {
       alert(`You lose: the word was ${word}`);
-      setStageToDeath(0);
       resetGame();
     }, 500);
+
+    const hello = "Marianne how are you";
   }
 
   function gameWon() {
@@ -123,7 +125,7 @@ async function getRandomWord(): Promise<string[]> {
   const length = Math.ceil(Math.random() * 6 + 3);
 
   const response = await fetch(
-    `https://random-word-api.vercel.app/api?words=1&length=${length}`
+    `https://random-word-api.vercel.app/api?words=1&length=${length}`,
   );
 
   if (!response.ok) {
